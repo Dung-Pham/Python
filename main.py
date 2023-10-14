@@ -9,15 +9,7 @@ pygame.init()
 SCREEN = WIDTH, HEIGHT = 350, 550
 CENTER = WIDTH // 2, HEIGHT // 2 # tính toạ độ trung tâm của màn hình 
 info = pygame.display.Info()  #lấy thông tin về màn hình hiển thị của hệ thống
-width = info.current_w
-height = info.current_h
-
-if width >= height:
-    win = pygame.display.set_mode(SCREEN, pygame.NOFRAME) #loại bỏ khung khi tạo cửa sổ trò chơi
-else:
-    win = pygame.display.set_mode(
-        SCREEN, pygame.NOFRAME | pygame.SCALED | pygame.FULLSCREEN)
-
+win = pygame.display.set_mode(SCREEN, pygame.NOFRAME) # vẽ cửa sổ win
 pygame.display.set_caption('Magic roll') #Tiêu đề cửa sổ game
 
 # Cài FPS = 95 (Khung hình trên mỗi giây)
