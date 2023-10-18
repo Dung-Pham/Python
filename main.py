@@ -9,7 +9,9 @@ pygame.init()
 SCREEN = WIDTH, HEIGHT = 350, 550
 CENTER = WIDTH // 2, HEIGHT // 2 # tính toạ độ trung tâm của màn hình 
 info = pygame.display.Info()  #lấy thông tin về màn hình hiển thị của hệ thống
-win = pygame.display.set_mode(SCREEN, pygame.NOFRAME) # vẽ cửa sổ win
+
+win = pygame.display.set_mode(SCREEN, pygame.NOFRAME)
+
 pygame.display.set_caption('Magic roll') #Tiêu đề cửa sổ game
 
 # Cài FPS = 95 (Khung hình trên mỗi giây)
@@ -98,9 +100,11 @@ particle_group = pygame.sprite.Group() #các hạt phát ra khi bóng va chạm
 #Đặt ở dưới đường kính của màn hình, ở các góc phần tư 3 và 4 của hình tròn
 # ball = Balls((CENTER[0], CENTER[1]-RADIUS), RADIUS, 270, win)
 # ball_group.add(ball)
-for i in range(1,360,60):
-    ball = Balls((CENTER[0], CENTER[1]-RADIUS), RADIUS, i, win)
-    ball_group.add(ball)
+def animation():
+    for i in range(1,360,60):
+        ball = Balls((CENTER[0], CENTER[1]-RADIUS), RADIUS, i, win)
+        ball_group.add(ball)
+
 # Cài đặt thời gian trong trò chơi
 start_time = pygame.time.get_ticks() #lấy thời điểm bắt đầu chạy trò chơi
 current_time = 0 #biến để theo dõi thời gian hiện tại
@@ -125,6 +129,7 @@ score_page = False
 
 running = True
 # Khi game được chạy
+animation()
 while running:
     # Tạo background cho game
     win.blit(background_img, (0, 0)) #vẽ background
@@ -133,6 +138,7 @@ while running:
     clock.tick(FPS)  # Screen FPS
     exit_button.draw(win) # tạo exit button
     # Lấy các sự kiện trong hàng đợi sự kiện của pygame
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False #khi người chơi tắt cửa sổ thì trò chơi kết thúc
@@ -157,8 +163,7 @@ while running:
                 # lặp qua tất cả các đối tượng bóng trong "ball_group"
                 for ball in ball_group:
                     ball.dtheta *= -1 #Đảo ngược hướng quay của bóng khi người chơi nhấn chuột.
-                    flip_fx.play() #thêm âm thanh khi bóng đổi chiều
-
+                flip_fx.play() #thêm âm thanh khi bóng đổi chiều
                 # thay đổi màu bóng sau 2 lần click
                 num_clicks += 1
                 if num_clicks % 2 == 0:
@@ -174,9 +179,7 @@ while running:
     # Khi đang ở trang chủ thì cập nhật trang chủ của trò chơi.
     if home_page:
         connected.update()
-
-        #Vẽ vòng tròn đen ở giữa màn hình game bán kính 105, độ dày 30
-        pygame.draw.circle(win, BLACK, CENTER, 105, 30)
+        pygame.draw.circle(win, BLACK, CENTER, 105, 30) #Vẽ vòng tròn đen ở giữa màn hình game bán kính 105, độ dày 30
         ball_group.update(color)
 
         # Nếu mức độ Dễ được nhấn 
@@ -207,10 +210,8 @@ while running:
         over_msg.update()  # OVER
 
         # hiển thị điểm số của người chơi khi biến score có giá trị
-        if score:
+        if score != -1:
             final_score.update(score, color)
-        else:
-            final_score.update("0", color)
         # Cập nhật lại điểm số cao nhất nếu 
         if score and (score >= highscore):
             new_high_msg.update(shadow=False)
@@ -224,7 +225,7 @@ while running:
             score = 0
             score_msg = Message(WIDTH//2, 100, 60, "0",
                                 score_font, (255, 228, 225), win) #hiển thị lại điểm số ban đâù là 0
-
+            animation()
         # Nếu nút replay được nhấn:
         if replay_btn.draw(win):
             home_page = False
@@ -280,14 +281,14 @@ while running:
 
                     # tạo ra các hạt phát ra (particle) từ trung tâm bóng khi chạm một đồng xu.
                     x, y = ball.rect.center
-                    for i in range(10): #vòng lặp để tạo 10 hạt phát ra từ quả bóng.
+                    for i in range(20): #vòng lặp để tạo 10 hạt phát ra từ quả bóng.
                         particle = Particle(x, y, color, win)
                         particle_group.add(particle) #Thêm đối tượng hạt phát ra vào nhóm particle_group.
 
                 # Nếu người chơi va chạm với chướng ngại vật
                 if pygame.sprite.spritecollide(ball, tile_group, True):
                     x, y = ball.rect.center
-                    for i in range(30):
+                    for i in range(35):
                         particle = Particle(x, y, color, win)
                         particle_group.add(particle)
 
@@ -302,19 +303,17 @@ while running:
             if coin_delta < delta < coin_delta + 100 and new_coin: #xác định khoảng thời gian đồng xu được tạo ra.
                 y = random.randint(CENTER[1]-RADIUS, CENTER[1]+RADIUS) #xác định vị trí trên trục y của đồng xu.
                 coin = Coins(y, win) #Tạo một đối tượng đồng xu (coin) với vị trí y 
-                coin_group.add(coin) 
+                coin_group.add(coin)
                 new_coin = False #đảm bảo rằng hiện chỉ có một đồng xu được tạo ra trên 1 trục
-
+                
             # Tạo ra các chướng ngại 
-            if current_time - start_time >= tile_delta: 
+            if delta >= tile_delta: 
                 y = random.choice([CENTER[1]-80, CENTER[1], CENTER[1]+80]) # random tọa độ y
                 type_ = random.randint(1, 3) # randon loại của gạch
                 t = Tiles(y, type_, win) #tạo chướng ngại
                 tile_group.add(t)
-
-                start_time = current_time
                 new_coin = True
-
+                start_time = current_time
         # Khi người chơi thua cuộc
         if not player_alive and len(particle_group) == 0:
             score_page = True
