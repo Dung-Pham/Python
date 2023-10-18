@@ -58,6 +58,7 @@ score_font = "Fonts/DroneflyRegular-K78LA.ttf"
 game_over_font = "Fonts/ghostclan.ttf"
 final_score_font = "Fonts/SVN-Zero.ttf"
 new_high_font = "Fonts/SVN-Neogrey.ttf"
+high_score_font="Fonts/SVN-Showcase Sans.ttf"
 
 # Sử dụng font chữ khác nhau cho các đối tượng văn bản
 connected = Message(WIDTH//2, 100, 45, "Magic roll", title_font, CORAL, win) 
@@ -65,10 +66,12 @@ connected = Message(WIDTH//2, 100, 45, "Magic roll", title_font, CORAL, win)
 score_msg = Message(WIDTH//2, 90, 60, "0", score_font, (255, 228, 225), win)
 game_msg = Message(110, 130, 40, "GAME", game_over_font, SKYBLUE, win)
 over_msg = Message(240, 130, 40, "OVER!", game_over_font, WHITE, win)
-final_score = Message(WIDTH//2, HEIGHT//2-20, 70, "0", final_score_font, INRED, win)
-new_high_msg = Message(WIDTH//2, HEIGHT//2+80, 20,
+final_score = Message(WIDTH//2, HEIGHT//2-50, 70, "0", final_score_font, INRED, win)
+new_high_msg = Message(WIDTH//2, HEIGHT//2+30, 20,
                        "Thành tích mới", new_high_font, GREEN, win)
-
+cheer_msg = Message(WIDTH//2, HEIGHT//2+30, 20, "Hãy cố gắng hơn", new_high_font, GREEN, win)
+highscore_msg = Message(WIDTH//2, HEIGHT//2+185, 26, "_Thành tích hiện tại_", high_score_font, SKYBLUE, win)
+hscrore_msg=Message(WIDTH//2, HEIGHT//2+220, 35, "0", high_score_font, SKYBLUE, win)
 # Thêm ảnh các nút nhấn trong game
 home_img = pygame.image.load('Assets/homeBtn.png')
 replay_img = pygame.image.load('Assets/replay.png')
@@ -81,11 +84,12 @@ exit_img = pygame.image.load("Assets/exit.png")
 # Cài đặt các nút nhấn
 easy_btn = Button(easy_img, (75, 50), WIDTH//4 - 10 , HEIGHT-120)
 hard_btn = Button(hard_img, (75, 50), WIDTH//2 + 25 , HEIGHT-120)
-home_btn = Button(home_img, (24, 24), WIDTH // 4 - 18, HEIGHT//2 + 135)
-replay_btn = Button(replay_img, (36, 36), WIDTH // 2 - 18, HEIGHT//2 + 130)
+home_btn = Button(home_img, (24, 24), WIDTH // 4 - 18, HEIGHT//2 + 100)
+replay_btn = Button(replay_img, (36, 36), WIDTH // 2 - 18, HEIGHT//2 + 95)
 sound_btn = Button(sound_on_img, (24, 24), WIDTH -
-                   WIDTH // 4 - 18, HEIGHT//2 + 135)
+                   WIDTH // 4 - 18, HEIGHT//2 + 100)
 exit_button = Button(exit_img,(30, 30),WIDTH//2 + 125, HEIGHT//2 - 255)
+
 # Tạo các Group để dễ quản lí các đối tượng trong game
 RADIUS = 90  # bán kính của hình tròn (balls)
 ball_group = pygame.sprite.Group() #bóng
@@ -93,13 +97,6 @@ coin_group = pygame.sprite.Group() #đồng xu
 tile_group = pygame.sprite.Group() #chướng ngại vật 
 particle_group = pygame.sprite.Group() #các hạt phát ra khi bóng va chạm 
 
-#Tạo 2 đối tượng bóng ở màn hình trò chơi
-#Đặt ở phía trên đường kính của màn hình, nằm ở các góc phần tư 1 và 2 của hình tròn
-# ball = Balls((CENTER[0], CENTER[1]+RADIUS), RADIUS, 90, win)
-# ball_group.add(ball) #thêm đối tượng 'ball' vào nhóm 'ball_group'
-#Đặt ở dưới đường kính của màn hình, ở các góc phần tư 3 và 4 của hình tròn
-# ball = Balls((CENTER[0], CENTER[1]-RADIUS), RADIUS, 270, win)
-# ball_group.add(ball)
 def animation():
     for i in range(1,360,60):
         ball = Balls((CENTER[0], CENTER[1]-RADIUS), RADIUS, i, win)
@@ -210,12 +207,17 @@ while running:
         over_msg.update()  # OVER
 
         # hiển thị điểm số của người chơi khi biến score có giá trị
-        if score != -1:
+        if score:
             final_score.update(score, color)
+        else:
+            final_score.update("0", color)
         # Cập nhật lại điểm số cao nhất nếu 
         if score and (score >= highscore):
-            new_high_msg.update(shadow=False)
+            new_high_msg.update(shadow=False) 
+        else : cheer_msg.update()
 
+        highscore_msg.update(shadow=False)
+        hscrore_msg.update(highscore)
         # Nếu nút home được nhấn:
         if home_btn.draw(win):
             home_page = True #trở lại màn hình home
