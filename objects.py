@@ -17,7 +17,7 @@ class Balls(pygame.sprite.Sprite):
         #super() được sử dụng để gọi các phương thức và thuộc tính của lớp cha từ lớp con
         self.initial_pos = pos #Lưu trữ vị trí ban đầu của quả bóng.
         self.radius = radius #Lưu trữ bán kính của quả bóng
-        self.initial_angle = angle #Lưu trữ bán kính của quả bóng
+        self.initial_angle = angle #Lưu trữ 
         self.win = win #Lưu trữ cửa sổ Pygame trên đó bóng sẽ được vẽ.
         self.reset() #đặt lại các thuộc tính của quả bóng.
         #Tạo quả bóng
@@ -39,21 +39,19 @@ class Balls(pygame.sprite.Sprite):
             #Danh sách lưu trữ các tọa độ của quả bóng trong một khoảng thời gian
         if len(self.pos_list) > 5:
             self.pos_list.pop(0) #Loại bỏ tọa độ đầu tiên trong danh sách self.pos_list
-
-        #tạo hiệu ứng 3D cho quả bóng.
-        pygame.draw.circle(self.win, (255, 255, 255), (x, y), 7)
-        #quản lý vị trí và va chạm của quả bóng
-        self.rect = pygame.draw.circle(self.win, color, (x, y), 6)
-
         #vẽ hiệu ứng theo sau khi quả bóng di chuyển
         for index, pos in enumerate(self.pos_list): # ds lưu trữ các tọa độ của các dấu vết của quả bóng.
             #index ưu trữ chỉ số của dấu vết hiện tại
             #pos lưu trữ tọa độ của dấu vết hiện tại.
-            if index < 3: 
+            if index < 3 : 
                 radius = 2 
             else:
                 radius = 4
             pygame.draw.circle(self.win, color, pos, radius)
+
+        #tạo hiệu ứng 3D cho quả bóng.
+        pygame.draw.circle(self.win, (255, 240, 245), (x+1, y+1), 8)
+        self.rect = pygame.draw.circle(self.win, color, (x, y), 6)
 
     # thiết lập lại các thuộc tính của bóng về trạng thái ban đầu.
     def reset(self):
@@ -158,14 +156,14 @@ class Particle(pygame.sprite.Sprite):
         self.y = y # Tọa độ x và y của hạt.
         self.color = color
         self.win = win
-        self.size = random.randint(4, 7)
+        self.size = random.randint(5, 8)
         # Kích thước ban đầu của hạt, được chọn ngẫu nhiên trong khoảng từ 4 đến 7.
         
         xr = (-3, 3)
         yr = (-3, 3)
         # Khoảng cách tối đa mà hạt có thể di chuyển theo phương x và y sau mỗi khung hình.
         f = 2 #Hệ số tốc độ
-        self.life = 40 # thời gian hạt có thể tồn tại
+        self.life = 100 # thời gian hạt có thể tồn tại
         #Thiết lập tốc độ di chuyển của hạt
         self.x_vel = random.randrange(xr[0], xr[1]) * f
         self.y_vel = random.randrange(yr[0], yr[1]) * f
@@ -173,7 +171,7 @@ class Particle(pygame.sprite.Sprite):
     # cập nhật vị trí và kích thước của hạt
     def update(self):
         self.size -= 0.1 # Kích thước của hạt giảm đi 0.1 trong mỗi khung hình.
-        self.lifetime += 1 #Thời gian tồn tại của hạt tăng lên 1 trong mỗi khung hình.
+        self.lifetime += 4.5 #Thời gian tồn tại của hạt tăng lên 1 trong mỗi khung hình.
         if self.lifetime <= self.life: #nếu hạt vẫn trong thời gian tồn tại
             self.x += self.x_vel
             self.y += self.y_vel
